@@ -1,0 +1,9 @@
+import { Redirect, Stack } from 'expo-router'
+import { useAuth } from '../../features/auth/AuthContext'
+
+/** Signed-in users never see the auth pages. */
+export default function AuthLayout() {
+  const { status } = useAuth()
+  if (status === 'authenticated') return <Redirect href="/" />
+  return <Stack screenOptions={{ headerShown: false }} />
+}
