@@ -6,12 +6,12 @@ Android + iOS app with the same features as `frontend/` (web). Shares the API co
 
 1. Start the backend reachable from the phone (same Wi-Fi):
    ```powershell
-   dotnet run --project ../backend/src/DoIt.Api --urls http://0.0.0.0:5194
+   dotnet run --project ../backend/src/DoIt.Api --urls http://0.0.0.0:5000
    ```
-   Open port 5194 in Windows Firewall (Private network) once.
+   Open port 5000 in Windows Firewall (Private network) once.
 2. Copy `.env.example` to `.env` and set your PC's LAN IP (`ipconfig` → IPv4):
    ```
-   EXPO_PUBLIC_API_URL=http://192.168.1.15:5194
+   EXPO_PUBLIC_API_URL=http://192.168.1.15:5000
    ```
 3. Install and start:
    ```powershell
@@ -19,7 +19,7 @@ Android + iOS app with the same features as `frontend/` (web). Shares the API co
    npx expo start
    ```
    Scan the QR code with **Expo Go** (Android / iOS). If the network blocks device-to-PC traffic, use `npx expo start --tunnel`
-   and expose the API with `cloudflared tunnel --url http://localhost:5194`.
+   and expose the API with `cloudflared tunnel --url http://localhost:5000`.
 
 ## Layout
 

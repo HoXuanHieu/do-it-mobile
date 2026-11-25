@@ -34,7 +34,7 @@ export interface AuthResponse {
   user: UserDto
 }
 
-// API origin from mobile/.env (EXPO_PUBLIC_API_URL), e.g. http://192.168.1.15:5194 — a phone cannot reach "localhost".
+// API origin from mobile/.env (EXPO_PUBLIC_API_URL), e.g. http://192.168.1.15:5000 — a phone cannot reach "localhost".
 export const API_BASE = `${(process.env.EXPO_PUBLIC_API_URL ?? '').replace(/\/+$/, '')}/api/v1`
 // The native HTTP stack keeps the httpOnly refresh cookie in the OS cookie jar (persists across app restarts).
 const CREDENTIALS: RequestCredentials = 'include'
