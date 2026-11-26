@@ -3,6 +3,7 @@ import { useState } from 'react'
 import { t, type Key } from '../../i18n'
 import { Button, Screen, Segmented } from '../../ui/components'
 import { useAuth } from '../auth/AuthContext'
+import { LegalLinks } from '../legal/LegalPage'
 import { AccountSettings } from './settings/AccountSettings'
 import { AppearanceSettings } from './settings/AppearanceSettings'
 import { PricingSettings } from './settings/PricingSettings'
@@ -34,6 +35,7 @@ export function SettingsPage() {
           void logout().finally(() => setLoggingOut(false))
         }}
       />
+      <LegalLinks />
     </Screen>
   )
 }

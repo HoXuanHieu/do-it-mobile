@@ -8,6 +8,7 @@ import { ApiError } from '../../lib/api'
 import { applyServerErrors, PASSWORD_HINT } from '../../lib/forms'
 import { Button, ErrorText, Field, H1, Input, LinkText, Muted, Notice, PasswordInput, Row, SafeScreen, Txt } from '../../ui/components'
 import { useColors } from '../../ui/theme'
+import { LegalLinks } from '../legal/LegalPage'
 import { authApi } from './api'
 import { useAuth } from './AuthContext'
 import {
@@ -29,6 +30,7 @@ function AuthCard({ title, subtitle, children }: { title: string; subtitle: stri
       <H1>{title}</H1>
       <Muted>{subtitle}</Muted>
       {children}
+      <LegalLinks />
     </SafeScreen>
   )
 }
@@ -113,6 +115,10 @@ export function RegisterPage() {
       <FormInput control={control} name="confirmPassword" label={t('Xác nhận mật khẩu')} password autoComplete="new-password" />
       <ErrorText>{formError}</ErrorText>
       <Button title={formState.isSubmitting ? t('Đang tạo tài khoản…') : t('Đăng ký')} busy={formState.isSubmitting} onPress={onSubmit} />
+      <Muted style={{ fontSize: 13 }}>
+        {t('Bằng việc đăng ký, bạn đồng ý với')} <LinkText style={{ fontSize: 13 }} onPress={() => router.push('/terms')}>{t('Điều khoản sử dụng')}</LinkText> {t('và')}{' '}
+        <LinkText style={{ fontSize: 13 }} onPress={() => router.push('/privacy')}>{t('Chính sách quyền riêng tư')}</LinkText>.
+      </Muted>
       <Row style={{ justifyContent: 'center' }}>
         <Muted>{t('Đã có tài khoản?')}</Muted>
         <Link href="/login"><LinkText>{t('Đăng nhập')}</LinkText></Link>

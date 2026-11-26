@@ -43,7 +43,9 @@ function CardHeader({ title, link, onPress }: { title: string; link: string; onP
   return (
     <RowBetween>
       <H2>{title}</H2>
-      <LinkText style={{ fontSize: 14 }} onPress={onPress}>{link}</LinkText>
+      <Pressable onPress={onPress} accessibilityRole="link" accessibilityLabel={link} hitSlop={12}>
+        <LinkText style={{ fontSize: 20 }}>→</LinkText>
+      </Pressable>
     </RowBetween>
   )
 }
@@ -59,7 +61,7 @@ function TodaySchedule({ day }: { day: Date }) {
 
   return (
     <Card>
-      <CardHeader title={t('Lịch hôm nay')} link={t('Xem lịch →')} onPress={() => open()} />
+      <CardHeader title={t('Lịch hôm nay')} link={t('Xem lịch')} onPress={() => open()} />
       {isPending && <Loading />}
       {isError && <ErrorText>{t('Không tải được lịch.')}</ErrorText>}
       {data && items.length === 0 && <Muted>{t('Hôm nay không có sự kiện nào.')}</Muted>}
@@ -88,7 +90,7 @@ function FinanceToday({ day }: { day: Date }) {
   const fmt = (n: number | undefined) => (n == null ? '…' : formatMoney(n, today.data?.currencyCode ?? currency))
   return (
     <Card>
-      <CardHeader title={t('Tài chính')} link={t('Giao dịch →')} onPress={() => router.push('/finance')} />
+      <CardHeader title={t('Tài chính')} link={t('Giao dịch')} onPress={() => router.push('/finance')} />
       {(today.isError || month.isError) && <ErrorText>{t('Không tải được dữ liệu.')}</ErrorText>}
       <DefList
         items={[
@@ -111,7 +113,7 @@ function MonthBudget({ day }: { day: Date }) {
   const open = () => router.push({ pathname: '/finance', params: { tab: 'budget', month } })
   return (
     <Card>
-      <CardHeader title={t('Ngân sách tháng')} link={t('Chi tiết →')} onPress={open} />
+      <CardHeader title={t('Ngân sách tháng')} link={t('Chi tiết')} onPress={open} />
       {isPending && <Loading />}
       {isError && <ErrorText>{t('Không tải được ngân sách.')}</ErrorText>}
       {data && !data.exists && (
@@ -146,7 +148,7 @@ function GoalsToday() {
   const goals = data ? activeByUrgency(data).slice(0, 3) : []
   return (
     <Card>
-      <CardHeader title={t('Mục tiêu')} link={t('Xem tất cả →')} onPress={() => router.push('/goals')} />
+      <CardHeader title={t('Mục tiêu')} link={t('Xem tất cả')} onPress={() => router.push('/goals')} />
       {isPending && <Loading />}
       {isError && <ErrorText>{t('Không tải được mục tiêu.')}</ErrorText>}
       {data && goals.length === 0 && (
