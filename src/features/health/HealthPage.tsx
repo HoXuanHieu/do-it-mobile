@@ -2,9 +2,9 @@ import { router } from 'expo-router'
 import { useState } from 'react'
 import { Pressable, Text } from 'react-native'
 import { locale, t } from '../../i18n'
-import { Button, Card, ErrorText, H2, Loading, Muted, RowBetween, Screen, Txt } from '../../ui/components'
+import { Button, Card, ErrorText, H2, Loading, Muted, RowBetween, Screen, Segmented, Txt } from '../../ui/components'
 import type { HealthProfileDto } from './api'
-import { MedicationCard } from './MedicationReminder'
+import { MedicationTab } from './MedicationReminder'
 import { BmiPill } from './parts'
 import { ProfileFormDialog } from './ProfileFormDialog'
 import { GOALS, labelOf, num, useHealthProfiles } from './queries'
@@ -17,6 +17,7 @@ export function Disclaimer() {
 export function HealthPage() {
   const { data: profiles, isPending, isError } = useHealthProfiles()
   const [creating, setCreating] = useState(false)
+  const [tab, setTab] = useState<'profiles' | 'meds'>('profiles')
 
   return (
     <Screen>
@@ -25,21 +26,27 @@ export function HealthPage() {
         <Button small title={t('+ Hồ sơ mới')} onPress={() => setCreating(true)} />
       </RowBetween>
 
-      {isPending && <Loading />}
-      {isError && <ErrorText>{t('Không tải được hồ sơ sức khỏe.')}</ErrorText>}
+      <Segmented value={tab} onChange={setTab} options={[{ value: 'profiles', label: t('Hồ sơ') }, { value: 'meds', label: t('Nhắc uống thuốc') }]} />
 
-      {profiles?.length === 0 && (
-        <Card style={{ alignItems: 'center', paddingVertical: 32 }}>
-          <Text style={{ fontSize: 40 }}>🩺</Text>
-          <H2 style={{ textAlign: 'center' }}>{t('Tạo hồ sơ sức khỏe đầu tiên')}</H2>
-          <Muted style={{ textAlign: 'center' }}>{t('Nhập chiều cao, cân nặng, mức vận động và mục tiêu để nhận đánh giá, gợi ý ăn uống và lịch tập phù hợp.')}</Muted>
-          <Button title={t('Tạo hồ sơ')} onPress={() => setCreating(true)} />
-        </Card>
+      {tab === 'meds' ? (
+        <MedicationTab />
+      ) : (
+        <>
+        {isPending && <Loading />}
+        {isError && <ErrorText>{t('Không tải được hồ sơ sức khỏe.')}</ErrorText>}
+
+        {profiles?.length === 0 && (
+          <Card style={{ alignItems: 'center', paddingVertical: 32 }}>
+            <Text style={{ fontSize: 40 }}>🩺</Text>
+            <H2 style={{ textAlign: 'center' }}>{t('Tạo hồ sơ sức khỏe đầu tiên')}</H2>
+            <Muted style={{ textAlign: 'center' }}>{t('Nhập chiều cao, cân nặng, mức vận động và mục tiêu để nhận đánh giá, gợi ý ăn uống và lịch tập phù hợp.')}</Muted>
+            <Button title={t('Tạo hồ sơ')} onPress={() => setCreating(true)} />
+          </Card>
+        )}
+
+        {profiles?.map((p) => <ProfileCard key={p.id} p={p} />)}
+        </>
       )}
-
-      {profiles?.map((p) => <ProfileCard key={p.id} p={p} />)}
-
-      <MedicationCard />
 
       <Disclaimer />
       <ProfileFormDialog open={creating} onClose={() => setCreating(false)} onSaved={(p) => router.push(`/health/${p.id}`)} />

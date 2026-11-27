@@ -4,8 +4,10 @@ import { locale, t, tx } from '../../i18n'
 import { addDays, DAY_MS, parseDateKey, startOfWeek, toDateKey, weekdayName } from '../../lib/dates'
 import { applyServerErrors } from '../../lib/forms'
 import {
-  Button, Card, ConfirmDialog, DateInput, ErrorText, Field, H2, Input, LinkText, Loading, Muted, Row, RowBetween, Sheet, SheetActions, TimeInput, Txt,
+  Button, Card, ConfirmDialog, ErrorText, Field, H2, Input, LinkText, Loading, Muted, Row, RowBetween, Sheet, SheetActions, Txt,
 } from '../../ui/components'
+import { DateInput } from '../../ui/DatePicker'
+import { TimeInput } from '../../ui/TimePicker'
 import { useColors } from '../../ui/theme'
 import { usePreferences } from '../account/queries'
 import type { HealthProfileDto, WorkoutDto, WorkoutInput } from './api'
@@ -200,7 +202,7 @@ function WorkoutForm({ state, profileId, onClose }: { state: { workout?: Workout
         <View style={{ flex: 3 }}><Field label={t('Ngày')}><DateInput value={v.date} onChange={set('date')} pattern={dateFormat} /></Field></View>
         <View style={{ flex: 2 }}>
           <Field label={t('Giờ')} hint={t('Không bắt buộc')}>
-            <TimeInput value={v.time} onChange={set('time')} />
+            <TimeInput optional value={v.time} onChange={set('time')} />
             {v.time ? <LinkText style={{ fontSize: 13 }} onPress={() => setV({ ...v, time: '' })}>{t('Xóa')}</LinkText> : null}
           </Field>
         </View>

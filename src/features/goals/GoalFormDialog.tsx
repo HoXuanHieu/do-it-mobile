@@ -6,7 +6,9 @@ import { z } from 'zod'
 import { t, tx } from '../../i18n'
 import { addDays, parseDateKey, startOfWeek, toDateKey } from '../../lib/dates'
 import { applyServerErrors } from '../../lib/forms'
-import { Button, DateInput, ErrorText, Field, IconButton, Input, Muted, Row, Sheet, SheetActions, TimeInput, Txt } from '../../ui/components'
+import { Button, ErrorText, Field, IconButton, Input, Muted, Row, Sheet, SheetActions, Txt } from '../../ui/components'
+import { DateInput } from '../../ui/DatePicker'
+import { TimeInput } from '../../ui/TimePicker'
 import { useColors } from '../../ui/theme'
 import { usePreferences } from '../account/queries'
 import type { GoalDto, GoalPeriod } from './api'
@@ -235,7 +237,7 @@ function GoalForm({ goal, onClose }: { goal: GoalDto | null; onClose: () => void
                 <Controller
                   control={control}
                   name={`steps.${i}.dueDate`}
-                  render={({ field }) => <DateInput value={field.value} onChange={field.onChange} pattern={pattern} placeholder={t('Hạn của chặng')} />}
+                  render={({ field }) => <DateInput optional value={field.value} onChange={field.onChange} pattern={pattern} placeholder={t('Hạn của chặng')} />}
                 />
               </View>
               {i > 0 && <IconButton label={t('Lên')} onPress={() => steps.move(i, i - 1)}>↑</IconButton>}

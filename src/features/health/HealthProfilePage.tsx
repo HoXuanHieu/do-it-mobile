@@ -6,8 +6,9 @@ import { locale, t, tx, type Key } from '../../i18n'
 import { DAY_MS, formatDate, parseDateKey, startOfDay, toDateKey } from '../../lib/dates'
 import { applyServerErrors } from '../../lib/forms'
 import {
-  Button, Card, ConfirmDialog, DateInput, ErrorText, Field, H2, IconButton, Input, Loading, Muted, Row, RowBetween, Screen, Segmented, Txt,
+  Button, Card, ConfirmDialog, ErrorText, Field, H2, IconButton, Input, Loading, Muted, Row, RowBetween, Screen, Segmented, Txt,
 } from '../../ui/components'
+import { DateInput } from '../../ui/DatePicker'
 import { useColors } from '../../ui/theme'
 import { usePreferences } from '../account/queries'
 import type { HealthProfileDto, MeasurementDto } from './api'

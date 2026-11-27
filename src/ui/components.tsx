@@ -1,5 +1,4 @@
 // Mobile counterparts of frontend/src/components (Form, Dialog, NavIcon) + the CSS building blocks (card, buttons, tabs).
-import DateTimePicker, { DateTimePickerAndroid } from '@react-native-community/datetimepicker'
 import { useState, type ReactNode } from 'react'
 import {
   ActivityIndicator,
@@ -8,7 +7,6 @@ import {
   Platform,
   Pressable,
   ScrollView,
-  StyleSheet,
   Switch,
   Text,
   TextInput,
@@ -21,7 +19,6 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context'
 import Svg, { Circle, Path, Rect } from 'react-native-svg'
 import { t, tx } from '../i18n'
-import { combine, formatDate, parseDateKey, toDateKey, toTimeValue } from '../lib/dates'
 import { RADIUS, useColors } from './theme'
 
 // ---------- Text ----------
@@ -52,7 +49,6 @@ export function Notice({ children }: { children: ReactNode }) {
 
 /** Scrollable page body (web <main class="content">). Pass scroll={false} when the child is a FlatList. */
 export function Screen({ children, scroll = true, style }: { children: ReactNode; scroll?: boolean; style?: StyleProp<ViewStyle> }) {
-  const c = useColors()
   const body = scroll ? (
     <ScrollView contentContainerStyle={[{ padding: 16, gap: 12, paddingBottom: 32 }, style]} keyboardShouldPersistTaps="handled">
       {children}
@@ -61,7 +57,7 @@ export function Screen({ children, scroll = true, style }: { children: ReactNode
     <View style={[{ flex: 1, padding: 16, gap: 12 }, style]}>{children}</View>
   )
   return (
-    <KeyboardAvoidingView style={{ flex: 1, backgroundColor: c.bg }} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
+    <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
       {body}
     </KeyboardAvoidingView>
   )
@@ -69,9 +65,8 @@ export function Screen({ children, scroll = true, style }: { children: ReactNode
 
 /** Full-screen page with safe-area insets (auth pages, no navigator header). */
 export function SafeScreen({ children }: { children: ReactNode }) {
-  const c = useColors()
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: c.bg }}>
+    <SafeAreaView style={{ flex: 1 }}>
       <Screen style={{ flexGrow: 1, justifyContent: 'center' }}>{children}</Screen>
     </SafeAreaView>
   )
@@ -80,11 +75,14 @@ export function SafeScreen({ children }: { children: ReactNode }) {
 export function Card({ children, style }: { children: ReactNode; style?: StyleProp<ViewStyle> }) {
   const c = useColors()
   return (
-    <View style={[{ backgroundColor: c.surface, borderColor: c.border, borderWidth: 1, borderRadius: RADIUS, padding: 16, gap: 10 }, style]}>
+    <View style={[{ backgroundColor: c.surface, borderColor: c.glassBorder, borderWidth: 1, borderRadius: RADIUS, padding: 16, gap: 10 }, glassShadow, style]}>
       {children}
     </View>
   )
 }
+
+// iOS only: Android elevation renders a grey slab through translucent views.
+const glassShadow: ViewStyle = Platform.OS === 'ios' ? { shadowColor: '#0b3a4a', shadowOpacity: 0.1, shadowRadius: 16, shadowOffset: { width: 0, height: 6 } } : {}
 
 export const Row = ({ children, style }: { children: ReactNode; style?: StyleProp<ViewStyle> }) => (
   <View style={[{ flexDirection: 'row', alignItems: 'center', gap: 8 }, style]}>{children}</View>
@@ -146,7 +144,7 @@ export function Button({
       style={({ pressed }) => [
         {
           backgroundColor: bg,
-          borderRadius: 8,
+          borderRadius: 999,
           paddingVertical: small ? 6 : 11,
           paddingHorizontal: small ? 10 : 16,
           alignItems: 'center',
@@ -278,27 +276,41 @@ export function Select<T extends string | number>({
         accessibilityRole="button"
         accessibilityLabel={label}
         onPress={() => setOpen(true)}
-        style={{ borderWidth: 1, borderColor: invalid ? c.danger : c.border, borderRadius: 8, paddingHorizontal: 12, paddingVertical: 11, backgroundColor: c.surface, flexDirection: 'row', justifyContent: 'space-between' }}
+        style={{ borderWidth: 1, borderColor: invalid ? c.danger : open ? c.primary : c.border, borderRadius: 10, paddingHorizontal: 12, paddingVertical: 11, backgroundColor: c.surface, flexDirection: 'row', alignItems: 'center', gap: 8 }}
       >
-        <Text style={{ color: current ? c.text : c.muted, fontSize: 15, flex: 1 }} numberOfLines={1}>{current?.label ?? placeholder ?? '—'}</Text>
-        <Text style={{ color: c.muted }}>▾</Text>
+        <Text style={{ color: current ? c.text : c.muted, fontSize: 15, flex: 1 }} numberOfLines={2}>{current?.label ?? placeholder ?? '—'}</Text>
+        <Svg width={18} height={18} viewBox="0 0 24 24" fill="none" stroke={c.muted} strokeWidth={1.8}>
+          <Path d={open ? 'M6 15l6-6 6 6' : 'M6 9l6 6 6-6'} strokeLinecap="round" strokeLinejoin="round" />
+        </Svg>
       </Pressable>
       <Sheet open={open} title={label ?? placeholder ?? ''} onClose={() => setOpen(false)}>
-        {options.map((o) => (
-          <Pressable
-            key={String(o.value)}
-            accessibilityRole="button"
-            accessibilityState={{ selected: o.value === value }}
-            onPress={() => {
-              onChange(o.value)
-              setOpen(false)
-            }}
-            style={{ paddingVertical: 12, borderBottomWidth: StyleSheet.hairlineWidth, borderColor: c.border, flexDirection: 'row', justifyContent: 'space-between' }}
-          >
-            <Txt style={o.value === value ? { color: c.primary, fontWeight: '600' } : undefined}>{o.label}</Txt>
-            {o.value === value ? <Txt style={{ color: c.primary }}>✓</Txt> : null}
-          </Pressable>
-        ))}
+        <View style={{ gap: 2, marginHorizontal: -6 }}>
+          {options.map((o) => {
+            const selected = o.value === value
+            return (
+              <Pressable
+                key={String(o.value)}
+                accessibilityRole="button"
+                accessibilityState={{ selected }}
+                onPress={() => {
+                  onChange(o.value)
+                  setOpen(false)
+                }}
+                style={({ pressed }) => ({
+                  paddingVertical: 12, paddingHorizontal: 14, borderRadius: 8, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 12,
+                  backgroundColor: selected ? c.primary + '1f' : pressed ? c.primary + '12' : 'transparent',
+                })}
+              >
+                <Txt style={[{ flex: 1 }, selected ? { color: c.primary, fontWeight: '600' } : undefined]}>{o.label}</Txt>
+                {selected ? (
+                  <Svg width={18} height={18} viewBox="0 0 24 24" fill="none" stroke={c.primary} strokeWidth={2}>
+                    <Path d="M5 12.5l4.5 4.5L19 7.5" strokeLinecap="round" strokeLinejoin="round" />
+                  </Svg>
+                ) : null}
+              </Pressable>
+            )
+          })}
+        </View>
       </Sheet>
     </>
   )
@@ -308,7 +320,8 @@ export function Select<T extends string | number>({
 export function Segmented<T extends string>({ value, options, onChange }: { value: T; options: Option<T>[]; onChange: (v: T) => void }) {
   const c = useColors()
   return (
-    <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: 6 }}>
+    // flexGrow 0: a horizontal ScrollView in a non-scrolling column otherwise fills the height and stretches the pills
+    <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ flexGrow: 0 }} contentContainerStyle={{ gap: 6, alignItems: 'center' }}>
       {options.map((o) => {
         const active = o.value === value
         return (
@@ -317,122 +330,13 @@ export function Segmented<T extends string>({ value, options, onChange }: { valu
             accessibilityRole="tab"
             accessibilityState={{ selected: active }}
             onPress={() => onChange(o.value)}
-            style={{ paddingVertical: 7, paddingHorizontal: 14, borderRadius: 999, backgroundColor: active ? c.primary : c.surface, borderWidth: 1, borderColor: active ? c.primary : c.border }}
+            style={{ paddingVertical: 5, paddingHorizontal: 12, borderRadius: 999, backgroundColor: active ? c.primary : c.surface, borderWidth: 1, borderColor: active ? c.primary : c.border }}
           >
-            <Text style={{ color: active ? '#fff' : c.text, fontWeight: '600', fontSize: 14 }}>{o.label}</Text>
+            <Text style={{ color: active ? '#fff' : c.text, fontWeight: '600', fontSize: 13 }}>{o.label}</Text>
           </Pressable>
         )
       })}
     </ScrollView>
-  )
-}
-
-/** Date picker; value/onChange use YYYY-MM-DD like <input type="date">. Empty string = no date. */
-export function DateInput({
-  value,
-  onChange,
-  pattern,
-  minimumDate,
-  maximumDate,
-  placeholder,
-  invalid,
-}: {
-  value: string
-  onChange: (v: string) => void
-  /** Display pattern from preferences (dd/MM/yyyy …). */
-  pattern?: string
-  minimumDate?: Date
-  maximumDate?: Date
-  placeholder?: string
-  invalid?: boolean
-}) {
-  const d = parseDateKey(value)
-  return (
-    <PickerField
-      mode="date"
-      label={d ? formatDate(d, pattern) : (placeholder ?? t('Chọn ngày'))}
-      empty={!d}
-      invalid={invalid}
-      current={d ?? new Date()}
-      minimumDate={minimumDate}
-      maximumDate={maximumDate}
-      onPick={(x) => onChange(toDateKey(x))}
-    />
-  )
-}
-
-/** Time picker; value/onChange use HH:mm like <input type="time">. */
-export function TimeInput({ value, onChange, invalid }: { value: string; onChange: (v: string) => void; invalid?: boolean }) {
-  const current = combine(toDateKey(new Date()), value) ?? new Date()
-  return <PickerField mode="time" label={value || '--:--'} empty={!value} invalid={invalid} current={current} onPick={(x) => onChange(toTimeValue(x))} />
-}
-
-function PickerField({
-  mode,
-  label,
-  empty,
-  invalid,
-  current,
-  minimumDate,
-  maximumDate,
-  onPick,
-}: {
-  mode: 'date' | 'time'
-  label: string
-  empty: boolean
-  invalid?: boolean
-  current: Date
-  minimumDate?: Date
-  maximumDate?: Date
-  onPick: (d: Date) => void
-}) {
-  const c = useColors()
-  const [iosOpen, setIosOpen] = useState(false)
-  const [draft, setDraft] = useState(current)
-  const open = () => {
-    if (Platform.OS === 'android') {
-      DateTimePickerAndroid.open({
-        value: current,
-        mode,
-        is24Hour: true,
-        minimumDate,
-        maximumDate,
-        onValueChange: (_e, d) => d && onPick(d),
-      })
-    } else {
-      setDraft(current)
-      setIosOpen(true)
-    }
-  }
-  return (
-    <>
-      <Pressable
-        accessibilityRole="button"
-        onPress={open}
-        style={{ borderWidth: 1, borderColor: invalid ? c.danger : c.border, borderRadius: 8, paddingHorizontal: 12, paddingVertical: 11, backgroundColor: c.surface }}
-      >
-        <Text style={{ color: empty ? c.muted : c.text, fontSize: 15 }}>{label}</Text>
-      </Pressable>
-      {Platform.OS === 'ios' && (
-        <Sheet open={iosOpen} title={mode === 'date' ? t('Chọn ngày') : t('Chọn giờ')} onClose={() => setIosOpen(false)}>
-          <DateTimePicker
-            value={draft}
-            mode={mode}
-            display={mode === 'date' ? 'inline' : 'spinner'}
-            minimumDate={minimumDate}
-            maximumDate={maximumDate}
-            onValueChange={(_e, d) => d && setDraft(d)}
-          />
-          <Button
-            title={t('Xong')}
-            onPress={() => {
-              onPick(draft)
-              setIosOpen(false)
-            }}
-          />
-        </Sheet>
-      )}
-    </>
   )
 }
 
@@ -445,7 +349,7 @@ export function Sheet({ open, title, onClose, children }: { open: boolean; title
     <RNModal visible={open} transparent animationType="slide" onRequestClose={onClose}>
       <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
         <Pressable accessibilityLabel={t('Đóng')} style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.4)' }} onPress={onClose} />
-        <SafeAreaView edges={['bottom']} style={{ backgroundColor: c.surface, borderTopLeftRadius: 16, borderTopRightRadius: 16, maxHeight: '90%' }}>
+        <SafeAreaView edges={['bottom']} style={{ backgroundColor: c.sheet, borderTopLeftRadius: 24, borderTopRightRadius: 24, maxHeight: '90%' }}>
           <RowBetween style={{ paddingHorizontal: 16, paddingTop: 14, paddingBottom: 6 }}>
             <H2 style={{ flex: 1 }}>{title}</H2>
             <IconButton label={t('Đóng')} onPress={onClose}>×</IconButton>
@@ -460,7 +364,7 @@ export function Sheet({ open, title, onClose, children }: { open: boolean; title
 }
 
 /** Right-aligned action row at the bottom of a sheet (web .modal-actions). */
-export const SheetActions = ({ children }: { children: ReactNode }) => <Row style={{ justifyContent: 'flex-end', marginTop: 4 }}>{children}</Row>
+export const SheetActions = ({ children }: { children: ReactNode }) => <Row style={{ justifyContent: 'flex-end', gap: 12, marginTop: 8 }}>{children}</Row>
 
 /** SRS §6.1: confirmation for destructive operations. */
 export function ConfirmDialog({

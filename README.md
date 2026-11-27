@@ -35,4 +35,4 @@ The backend dev config already has `Auth:SecureCookies=false` so the cookie work
 
 ## Build
 
-`npx eas-cli build -p android --profile preview` (APK) / `-p ios` (needs an Apple Developer account). Builds run in the Expo cloud.
+`npx eas-cli build -p android --profile staging` (APK) / `-p ios --profile staging` (needs an Apple Developer account; register the iPhone first with `npx eas-cli device:create`). Builds run in the Expo cloud and use the staging API from `eas.json`.

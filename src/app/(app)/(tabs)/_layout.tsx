@@ -1,6 +1,7 @@
 import { router } from 'expo-router'
 import { Tabs } from 'expo-router/tabs'
-import { Image, Pressable, Text, View } from 'react-native'
+import { Image, Platform, Pressable, Text, View } from 'react-native'
+import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { t, type Key } from '../../../i18n'
 import { useAvatarUrl, useProfile } from '../../../features/account/queries'
 import { useAuth } from '../../../features/auth/AuthContext'
@@ -19,15 +20,38 @@ const TABS: { name: string; label: Key; icon: IconName }[] = [
 /** Bottom tabs = web sidebar modules; notifications / settings / profile sit in the header. */
 export default function TabsLayout() {
   const c = useColors()
+  const insets = useSafeAreaInsets()
   return (
     <Tabs
       screenOptions={{
-        headerStyle: { backgroundColor: c.surface },
+        headerStyle: { backgroundColor: 'transparent' },
+        headerShadowVisible: false,
         headerTintColor: c.text,
-        tabBarStyle: { backgroundColor: c.surface, borderTopColor: c.border },
+        headerTitleAlign: 'left', // centered long titles ("Calendar & Events") run under the header icons on iOS
+        headerTitleStyle: { fontSize: 18, fontWeight: '800' },
+        // floating glass pill, kept in layout flow so screens/FABs need no extra bottom padding
+        tabBarStyle: {
+          marginHorizontal: 14,
+          marginBottom: insets.bottom + 8,
+          height: 64,
+          paddingTop: 6,
+          paddingBottom: 6,
+          paddingHorizontal: 6,
+          borderRadius: 32,
+          borderTopWidth: 0,
+          borderWidth: 1,
+          borderColor: c.glassBorder,
+          backgroundColor: c.surface,
+          elevation: 0,
+          ...(Platform.OS === 'ios' ? { shadowColor: '#0b3a4a', shadowOpacity: 0.15, shadowRadius: 18, shadowOffset: { width: 0, height: 8 } } : {}),
+        },
+        // the active background is painted on an inner square pressable; clip it to the rounded item
+        tabBarItemStyle: { borderRadius: 26, overflow: 'hidden' },
+        tabBarActiveBackgroundColor: c.pill,
+        tabBarLabelStyle: { fontSize: 11, fontWeight: '600' },
         tabBarActiveTintColor: c.primary,
         tabBarInactiveTintColor: c.muted,
-        sceneStyle: { backgroundColor: c.bg },
+        sceneStyle: { backgroundColor: 'transparent' },
         headerRight: () => <HeaderActions />,
       }}
     >
