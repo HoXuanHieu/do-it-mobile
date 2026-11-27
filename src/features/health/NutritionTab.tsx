@@ -4,8 +4,9 @@ import { t, tx } from '../../i18n'
 import { addDays, DAY_MS, parseDateKey, toDateKey, weekdayName } from '../../lib/dates'
 import { applyServerErrors } from '../../lib/forms'
 import {
-  Bar, Button, Card, ConfirmDialog, DateInput, ErrorText, Field, H2, IconButton, Input, LinkText, Loading, Muted, Row, RowBetween, Select, Sheet, SheetActions, Txt,
+  Bar, Button, Card, ConfirmDialog, ErrorText, Field, H2, IconButton, Input, LinkText, Loading, Muted, Row, RowBetween, Select, Sheet, SheetActions, Txt,
 } from '../../ui/components'
+import { DateInput } from '../../ui/DatePicker'
 import { useColors, type Colors } from '../../ui/theme'
 import { usePreferences } from '../account/queries'
 import type { FoodEntryDto, FoodEntryInput, HealthProfileDto, MealType } from './api'

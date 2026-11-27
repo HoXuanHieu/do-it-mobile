@@ -18,12 +18,14 @@ import { ProgressRing } from '../goals/widgets'
 
 export function DashboardPage() {
   const { user } = useAuth()
+  const c = useColors()
   const [today] = useState(() => new Date())
   const todayLabel = new Intl.DateTimeFormat(locale(), { dateStyle: 'full' }).format(today)
   return (
     <Screen>
       <View>
         <H1>{user?.fullName ? t('Xin chào, {name}', { name: user.fullName }) : t('Xin chào')}</H1>
+        <Txt style={{ fontStyle: 'italic', color: c.primary }}>{t('Nghĩ là làm — mỗi ngày một bước tiến.')}</Txt>
         <Muted>{todayLabel}</Muted>
       </View>
       {/* FR-DASH-001 */}
