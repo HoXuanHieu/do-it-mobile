@@ -21,9 +21,11 @@ function Shell() {
     <>
       <Stack
         screenOptions={{
-          headerStyle: { backgroundColor: c.surface },
+          headerStyle: { backgroundColor: c.headerBg }, // = Backdrop sky top, so the header blends in
+          headerShadowVisible: false,
           headerTintColor: c.text,
-          contentStyle: { backgroundColor: c.bg },
+          headerTitleStyle: { fontWeight: '700' },
+          contentStyle: { backgroundColor: 'transparent' },
           headerBackTitle: t('Quay lại'),
         }}
       >

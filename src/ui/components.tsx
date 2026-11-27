@@ -49,7 +49,6 @@ export function Notice({ children }: { children: ReactNode }) {
 
 /** Scrollable page body (web <main class="content">). Pass scroll={false} when the child is a FlatList. */
 export function Screen({ children, scroll = true, style }: { children: ReactNode; scroll?: boolean; style?: StyleProp<ViewStyle> }) {
-  const c = useColors()
   const body = scroll ? (
     <ScrollView contentContainerStyle={[{ padding: 16, gap: 12, paddingBottom: 32 }, style]} keyboardShouldPersistTaps="handled">
       {children}
@@ -58,7 +57,7 @@ export function Screen({ children, scroll = true, style }: { children: ReactNode
     <View style={[{ flex: 1, padding: 16, gap: 12 }, style]}>{children}</View>
   )
   return (
-    <KeyboardAvoidingView style={{ flex: 1, backgroundColor: c.bg }} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
+    <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
       {body}
     </KeyboardAvoidingView>
   )
@@ -66,9 +65,8 @@ export function Screen({ children, scroll = true, style }: { children: ReactNode
 
 /** Full-screen page with safe-area insets (auth pages, no navigator header). */
 export function SafeScreen({ children }: { children: ReactNode }) {
-  const c = useColors()
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: c.bg }}>
+    <SafeAreaView style={{ flex: 1 }}>
       <Screen style={{ flexGrow: 1, justifyContent: 'center' }}>{children}</Screen>
     </SafeAreaView>
   )
@@ -77,11 +75,14 @@ export function SafeScreen({ children }: { children: ReactNode }) {
 export function Card({ children, style }: { children: ReactNode; style?: StyleProp<ViewStyle> }) {
   const c = useColors()
   return (
-    <View style={[{ backgroundColor: c.surface, borderColor: c.border, borderWidth: 1, borderRadius: RADIUS, padding: 16, gap: 10 }, style]}>
+    <View style={[{ backgroundColor: c.surface, borderColor: c.glassBorder, borderWidth: 1, borderRadius: RADIUS, padding: 16, gap: 10 }, glassShadow, style]}>
       {children}
     </View>
   )
 }
+
+// iOS only: Android elevation renders a grey slab through translucent views.
+const glassShadow: ViewStyle = Platform.OS === 'ios' ? { shadowColor: '#0b3a4a', shadowOpacity: 0.1, shadowRadius: 16, shadowOffset: { width: 0, height: 6 } } : {}
 
 export const Row = ({ children, style }: { children: ReactNode; style?: StyleProp<ViewStyle> }) => (
   <View style={[{ flexDirection: 'row', alignItems: 'center', gap: 8 }, style]}>{children}</View>
@@ -143,7 +144,7 @@ export function Button({
       style={({ pressed }) => [
         {
           backgroundColor: bg,
-          borderRadius: 8,
+          borderRadius: 999,
           paddingVertical: small ? 6 : 11,
           paddingHorizontal: small ? 10 : 16,
           alignItems: 'center',
@@ -348,7 +349,7 @@ export function Sheet({ open, title, onClose, children }: { open: boolean; title
     <RNModal visible={open} transparent animationType="slide" onRequestClose={onClose}>
       <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
         <Pressable accessibilityLabel={t('Đóng')} style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.4)' }} onPress={onClose} />
-        <SafeAreaView edges={['bottom']} style={{ backgroundColor: c.surface, borderTopLeftRadius: 16, borderTopRightRadius: 16, maxHeight: '90%' }}>
+        <SafeAreaView edges={['bottom']} style={{ backgroundColor: c.sheet, borderTopLeftRadius: 24, borderTopRightRadius: 24, maxHeight: '90%' }}>
           <RowBetween style={{ paddingHorizontal: 16, paddingTop: 14, paddingBottom: 6 }}>
             <H2 style={{ flex: 1 }}>{title}</H2>
             <IconButton label={t('Đóng')} onPress={onClose}>×</IconButton>

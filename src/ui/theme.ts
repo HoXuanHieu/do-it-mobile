@@ -5,13 +5,18 @@ import { keys } from '../features/account/queries'
 import { useAuth } from '../features/auth/AuthContext'
 
 // Same palette as frontend/src/index.css (+ styles/finance.css income/expense/warn).
+// bg/surface are translucent "glass" over the Backdrop; sheet/headerBg stay opaque.
 const light = {
-  bg: '#f6f7f9',
-  surface: '#ffffff',
-  text: '#1b1f24',
-  muted: '#5d6673',
-  border: '#e2e5ea',
-  primary: '#2f6fed',
+  bg: 'rgba(255,255,255,0.45)',
+  surface: 'rgba(255,255,255,0.72)',
+  sheet: '#ffffff',
+  headerBg: '#cfe8f3',
+  glassBorder: 'rgba(255,255,255,0.85)',
+  pill: 'rgba(255,255,255,0.95)',
+  text: '#16232b',
+  muted: '#4f5d68',
+  border: 'rgba(20,70,90,0.15)',
+  primary: '#1d7c8f',
   danger: '#c62828',
   success: '#2e7d32',
   successBg: '#e8f5e9',
@@ -22,12 +27,16 @@ const light = {
 }
 
 const dark: typeof light = {
-  bg: '#111418',
-  surface: '#1a1e24',
-  text: '#e7eaee',
-  muted: '#9aa3ae',
-  border: '#2b313a',
-  primary: '#5b8ff9',
+  bg: 'rgba(255,255,255,0.05)',
+  surface: 'rgba(20,30,42,0.72)',
+  sheet: '#18222e',
+  headerBg: '#0d1b2a',
+  glassBorder: 'rgba(255,255,255,0.10)',
+  pill: 'rgba(255,255,255,0.14)',
+  text: '#e7eef2',
+  muted: '#a3b0ba',
+  border: 'rgba(255,255,255,0.14)',
+  primary: '#4fb8c9',
   danger: '#ef6b6b',
   success: '#4caf7d',
   successBg: '#17301f',
@@ -61,4 +70,4 @@ export function useColors(): Colors {
   return useIsDark() ? dark : light
 }
 
-export const RADIUS = 10
+export const RADIUS = 20
